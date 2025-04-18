@@ -1,0 +1,52 @@
+{
+    "lm answer": [
+        "[answer]:Oxidizing agents",
+        "[answer]:Clone",
+        "[answer]:Vertebrae",
+        "[answer]:Elevation",
+        "[answer]:Tree rings",
+        "[answer]:hormones",
+        "gametes",
+        "conifer",
+        "[answer]:High viscosity",
+        "crystal lattice",
+        "[answer]:About 3,000 meters (9,800 feet) tall.",
+        "[answer]:Arthropods",
+        "sand and gravel",
+        "male reproductive system",
+        "photosynthesis",
+        "[answer]:A neon light produces visible light through the excitation of neon gas atoms, which emit light when they are excited by an electric current.",
+        "feathers",
+        "[answer]:cellular respiration",
+        "[answer]:quartz and feldspar",
+        "[answer]:humidity"
+    ],
+    "ground truth": [
+        "oxidants",
+        "clone",
+        "backbone",
+        "elevation",
+        "tree rings",
+        "plant hormones",
+        "sperm and eggs",
+        "deciduous",
+        "highly viscous",
+        "regular array",
+        "about 2 km",
+        "insects",
+        "sediments",
+        "male reproductive system",
+        "photosynthesis",
+        "electroluminescence",
+        "wings",
+        "oxygen",
+        "feldspar and quartz",
+        "humidity"
+    ],
+    "acc": [
+        "0.150"
+    ],
+    "embed_score": [
+        "0.751"
+    ]
+}
