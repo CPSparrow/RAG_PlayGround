@@ -1,5 +1,6 @@
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Literal
 
 import datasets
@@ -132,6 +133,7 @@ def eval(
 ):
     lm = LanguageModel(rag_type)
     em = EmbeddingModel()
+    data = get_data()
     
     if rag_type == "none":
         output_file = f"{output_prefix}_empty.json"
@@ -139,7 +141,6 @@ def eval(
         output_file = f"{output_prefix}_w_o_rag.json"
     elif rag_type == "dense":
         assert n_docs is not None, "n_docs must be provided."
-        data = get_data()
         output_file = f"{output_prefix}_w_d_rag.json"
         lm.add_docs(data["docs"])
     else:
@@ -155,9 +156,17 @@ def eval(
         "embed_score" : list()
     }
     
-    for i in tqdm(range(n_questions), ncols=80, desc="Evaluating"):
-        question, ground_truth = data["question"][i], data["answer"][i]
-        lm_ans = lm(question, n_docs)
+    question_list = [data["question"][i] for i in range(n_questions)]
+    ground_truth_list = [data["answer"][i] for i in range(n_questions)]
+    
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        lm_answer_list = list(tqdm(
+            executor.map(lambda query: lm(query, n_docs), question_list),
+            total=n_questions,
+            desc="Evaluating",
+        ))
+    
+    for lm_ans, ground_truth in zip(lm_answer_list, ground_truth_list):
         if lm_ans.startswith("[answer]:"):
             lm_ans = lm_ans[len("[answer]:"):]
         result["lm answer"].append(lm_ans)
@@ -165,7 +174,8 @@ def eval(
         
         if ground_truth in lm_ans:
             acc += 1
-        embed_score_list.append(em([lm_ans])[0] @ em([ground_truth])[0])
+        emb = em([lm_ans, ground_truth])
+        embed_score_list.append(emb[0] @ emb[1])
     
     acc /= n_questions
     embed_score = np.array(embed_score_list).mean()
@@ -217,6 +227,9 @@ def rag_display():
 
 
 if __name__ == "__main__":
-    eval(rag_type="dense", n_questions=30, n_docs=5)
+    n_questions = 1000
+    n_docs = 5
+    eval("cot", n_questions, n_docs)
+    eval("dense", n_questions, n_docs)
     
     # rag_display()
