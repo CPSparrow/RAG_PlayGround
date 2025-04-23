@@ -17,7 +17,7 @@ class EmbeddingModel:
             api_key="empty",
             base_url="http://127.0.0.1:1234/v1"
         )
-        self.model_name = "text-embedding-nomic-embed-text-v1.5"
+        self.model_name = "text-embedding-nomic-embed-text-v1.5-embedding"
     
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
@@ -159,7 +159,7 @@ def eval(
     question_list = [data["question"][i] for i in range(n_questions)]
     ground_truth_list = [data["answer"][i] for i in range(n_questions)]
     
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=20) as executor:
         lm_answer_list = list(tqdm(
             executor.map(lambda query: lm(query, n_docs), question_list),
             total=n_questions,
@@ -198,7 +198,8 @@ def get_data():
     })
     """
     dataset = datasets.load_dataset(
-        path="./sciq",
+        path="./Datasets/sciq",
+        cache_dir="./cache",
     )['test']
     dataset = dataset.remove_columns(['distractor3', 'distractor1', 'distractor2'])
     dataset = dataset.rename_columns({"correct_answer": "answer", "support": "docs"})
@@ -207,14 +208,18 @@ def get_data():
 
 def rag_display():
     """
-    simple demo, may be out of date.
+    simple demo, shows how faiss and embedding model works.
     """
-    data = get_data()
-    documents = data["docs"]
-    rag = DenseRAG(data['docs'])
+    documents = [
+        "Faiss is a library for efficient similarity search",
+        "Facebook AI Research developed Faiss",
+        "Approximate nearest neighbor search is useful for large datasets",
+        "Vector databases power modern search applications"
+    ]
+    rag = DenseRAG(documents)
     
-    k = 5
-    query = ["What is a phosphatase?", "what is the study of ecosystems?"]
+    k = 2
+    query = ["What is Faiss?", "I like using databases."]
     
     Distance, Index = rag.search(query, k=k)
     
