@@ -1,0 +1,7 @@
+pandas
+rank-bm25
+datasets
+faiss-cpu
+numpy
+openai
+tqdm

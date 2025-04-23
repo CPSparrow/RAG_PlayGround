@@ -24,6 +24,7 @@
 
 1. 根据你使用的服务提供商的信息编辑 embedding 和 llm model对应的 ```api_key```, ```base_url``` 和 ```model_name```
    。也可以和本代码一样使用本地部署的模型。
+2. 在终端运行 ```SimpleRAG.py``` ,评估结果会自动覆盖同目录下的 json 文件。
 
 ## 未经验证的技术
 
