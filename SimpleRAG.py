@@ -22,29 +22,42 @@ class EmbeddingModel:
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
     
-    def forward(self, text: List[str]) -> np.ndarray:
-        assert isinstance(text, list), "text must be a list"
+    def embed_single_batch(self, text: list[str]) -> np.ndarray:
+        assert len(text) <= 10, "too much items in input."
+        response = self.client.embeddings.create(
+            model=self.model_name,
+            input=text,
+        )
+        return np.array([data.embedding for data in response.data], dtype=np.float32)
+    
+    def forward(self, text_list: List[str]) -> np.ndarray:
+        assert isinstance(text_list, list), "text must be a list"
         
         batch_size = 10
-        embeddings = []
+        n_threads = 20
         
-        is_visible = True if len(text) >= 300 else False
-        for i in tqdm(
-                range(0, len(text), batch_size),
-                ncols=80,
-                desc="Generating Embedding",
-                disable=not is_visible,
-        ):
-            batch = text[i:i + batch_size]
-            response = self.client.embeddings.create(
-                model=self.model_name,
-                input=batch,
-            )
-            embeddings.append(
-                np.array([data.embedding for data in response.data], dtype=np.float32)
-            )
-        
-        return np.vstack(embeddings)
+        if len(text_list) <= 100:
+            embedding_list = []
+            for i in range(0, len(text_list), batch_size):
+                batch = text_list[i:i + batch_size]
+                
+                embedding_list.append(self.embed_single_batch(batch))
+            return np.vstack(embedding_list)
+        else:
+            batch_list = [
+                text_list[i:i + batch_size]
+                for i in range(0, len(text_list), batch_size)
+            ]
+            with ThreadPoolExecutor(max_workers=20) as executor:
+                embedding_list = list(tqdm(
+                    executor.map(
+                        lambda batch: self.embed_single_batch(batch),
+                        batch_list
+                    ),
+                    total=len(text_list) // batch_size,
+                    desc="Generating Embeddings",
+                ))
+            return np.vstack(embedding_list)
 
 
 class LanguageModel:
@@ -72,6 +85,8 @@ class LanguageModel:
             command = self.prompt + question
         elif self.rag_type == "dense":
             command = self.prepare_rag_prompt(self.prompt, question, k)
+        else:
+            raise NotImplementedError(f"rag type:{self.rag_type} not implemented")
         
         try:
             response = self.client.chat.completions.create(

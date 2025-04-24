@@ -5,7 +5,8 @@
 ## 一些比较好的文章
 
 - 介绍 **Rerank**: [知乎链接](https://zhuanlan.zhihu.com/p/676996307)
-- 关于 **chunking** 技术的一些介绍：[网页链接](https://www.luxiangdong.com/2023/09/20/chunk/)
+- 关于 **chunking**
+  技术的一些介绍：[中文翻译](https://zhuanlan.zhihu.com/p/676979306) / [原文](https://www.pinecone.io/learn/chunking-strategies/)
 - **RRF** :基于文档排名的一种技术：[网页链接](https://www.luxiangdong.com/2024/11/08/rrf/)
 - 产品经理视角下的 RAG ：[知乎链接](https://zhuanlan.zhihu.com/p/8352563254)
 - 如何评估 RAG / Rerank
