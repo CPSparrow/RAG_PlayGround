@@ -4,6 +4,8 @@
 
 ## 一些比较好的文章
 
+- **bm25** 的高效 python
+  实现：[介绍链接](https://developer.volcengine.com/articles/7390577255279247371) / [GitHub链接](https://github.com/xhluca/bm25s)
 - 介绍 **Rerank**: [知乎链接](https://zhuanlan.zhihu.com/p/676996307)
 - 关于 **chunking**
   技术的一些介绍：[中文翻译](https://zhuanlan.zhihu.com/p/676979306) / [原文](https://www.pinecone.io/learn/chunking-strategies/)

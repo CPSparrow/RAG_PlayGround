@@ -1,6 +1,6 @@
 .idea
 test*.py
 test*.ipynb
-storage
 cache
-Datasets/TriviaQA
+TriviaQA
+__pycache__

@@ -124,15 +124,18 @@ class LanguageModel:
 class DenseRAG:
     def __init__(self, documents: list[str]):
         self.embedding = EmbeddingModel()
-        self.file_path = "./storage/index.db"
+        self.cache_path = "./cache/EmbCache"
         
-        embeddings = self.embedding(documents)
+        if os.path.exists(os.path.join(self.cache_path, "index.idx")):
+            index = faiss.read_index(os.path.join(self.cache_path, "index.idx"))
+        else:
+            embeddings = self.embedding(documents)
         index = faiss.IndexFlatIP(embeddings.shape[1])
         index.add(embeddings)
         self.index = index
     
     def __call__(self, *args, **kwargs):
-        return search(*args, **kwargs)
+        return self.search(*args, **kwargs)
     
     def search(self, query_list: list[str], k: int):
         assert isinstance(query_list, list), "query must be a list."
